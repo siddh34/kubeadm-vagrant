@@ -9,13 +9,15 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # TODO: Networking between VMs
+
   # Define VM2
-  config.vm.define "vm2" do |vm2|
-    vm2.vm.box = "net9/ubuntu-24.04-arm64"
-    vm2.vm.network "forwarded_port", guest: 80, host: 8081
-    vm2.vm.provider "virtualbox" do |vb|
-      vb.cpus = 1
-      vb.memory = 2048
-    end
-  end
+  # config.vm.define "vm2" do |vm2|
+  #   vm2.vm.box = "net9/ubuntu-24.04-arm64"
+  #   vm2.vm.network "forwarded_port", guest: 80, host: 8081
+  #   vm2.vm.provider "virtualbox" do |vb|
+  #     vb.cpus = 1
+  #     vb.memory = 2048
+  #   end
+  # end
 end
