@@ -32,21 +32,20 @@ sudo sysctl --system
 sudo apt-get update
 sudo apt-get install -y containerd
 sudo mkdir -p /etc/containerd
-cd /etc/containerd
-sudo touch config.toml
-sudo containerd config default | sudo tee config.toml
-```
 
-Note: Search the SystemdCgroup in config.toml file & make it true
 
-```bash
+containerd config default | sudo tee /etc/containerd/config.toml >/dev/null
+
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
 sudo systemctl restart containerd
+sudo systemctl enable containerd
 ```
 
 Disable firewall
 
 ```bash
-sudo ufw allow 6443
+sudo ufw disable
 ```
 
 ## Step 3: Kernel config
@@ -88,11 +87,11 @@ sudo systemctl enable --now kubelet
 
 ```bash
 # sudo kubeadm reset
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --kubernetes-version=1.32.0
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --kubernetes-version=1.32.0 --apiserver-advertise-address=192.168.56.101
 ```
 
 ```bash
-mkdir -p $HOME/.kube
+sudo mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 export KUBECONFIG=$HOME/.kube/config
