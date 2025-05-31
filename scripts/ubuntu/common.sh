@@ -33,6 +33,8 @@ EOF
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.conf.default.rp_filter=1
+net.ipv4.conf.all.rp_filter=1
 EOF
   sudo sysctl --system
 
@@ -54,6 +56,8 @@ net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.conf.default.rp_filter=1
+net.ipv4.conf.all.rp_filter=1
 EOF
 
  sudo sysctl --system
@@ -78,9 +82,11 @@ install_kubernetes_components() {
   sudo systemctl enable --now kubelet
 }
 
+# TODO: FIX THIS
 setup_kubeconfig() {
-  sudo mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  export KUBECONFIG=$HOME/.kube/config
+  sudo rm -rf /vagrant/.kube
+  sudo mkdir -p /vagrant/.kube
+  sudo cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
+  sudo chown $(id -u):$(id -g) /vagrant/.kube/config
+  export KUBECONFIG=/vagrant/.kube/config
 }

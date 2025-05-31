@@ -12,8 +12,8 @@ remove_control_plane_taint() {
 }
 
 install_cni() {
-  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/${CALICO_VERSION}/manifests/tigera-operator.yaml
-  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/${CALICO_VERSION}/manifests/custom-resources.yaml
+  echo "Applying calico CNI plugin..."
+  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 }
 
 print_join_command() {

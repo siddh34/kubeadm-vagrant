@@ -8,6 +8,12 @@ nodes:
     memory: 4096
     image: net9/ubuntu-24.04-arm64
     script: scripts/ubuntu/master.sh
+    disk_size: 20GB
+    env:
+      - name: IP_AUTODETECTION_METHOD
+        value: "interface=enp0s8"
+      - name: KUBECONFIG
+        value: "/vagrant/.kube/config"
   - name: worker1
     hostname: worker1
     ip: 192.168.56.102
@@ -15,3 +21,4 @@ nodes:
     memory: 2048
     image: net9/ubuntu-24.04-arm64
     script: scripts/ubuntu/nodes.sh
+    disk_size: 12GB
