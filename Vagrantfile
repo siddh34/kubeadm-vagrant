@@ -18,7 +18,13 @@ Vagrant.configure("2") do |config|
           vm.vm.provision "shell", inline: "echo 'export #{env_var['name']}=#{env_var['value']}' >> /etc/profile.d/custom_env.sh"
         end
       end
-      vm.vm.provision "shell", path: node['script'] if node['script']
+      if node['script']
+        script_parts = node['script'].split(' ')
+        script_path = script_parts.shift
+        vm.vm.provision "shell",
+          path: script_path,
+          args: script_parts
+      end
     end
   end
 end

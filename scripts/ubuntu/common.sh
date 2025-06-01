@@ -2,15 +2,15 @@
 K8S_VERSION="1.32.0-1.1"
 CALICO_VERSION="v3.29.1"
 POD_NETWORK_CIDR="192.168.0.0/16"
-APISERVER_ADVERTISE_ADDRESS="192.168.56.101"
+NODE_SERVER_IP="192.168.56.101"
 DEBIAN_FRONTEND=noninteractive
 
 # Parse arguments
 parse_args() {
   for arg in "$@"; do
     case $arg in
-      --api-server-ip=*)
-        APISERVER_ADVERTISE_ADDRESS="${arg#*=}"
+      --node-server-ip=*)
+        NODE_SERVER_IP="${arg#*=}"
         shift
         ;;
       *)
@@ -78,6 +78,9 @@ install_kubernetes_components() {
 
   sudo apt-get update
   sudo apt-get install -y kubelet=${K8S_VERSION} kubeadm=${K8S_VERSION} kubectl=${K8S_VERSION}
+
+  echo "KUBELET_EXTRA_ARGS=\"--node-ip=${NODE_SERVER_IP}\"" >> /etc/default/kubelet
+
   sudo apt-mark hold kubelet kubeadm kubectl
   sudo systemctl enable --now kubelet
 }

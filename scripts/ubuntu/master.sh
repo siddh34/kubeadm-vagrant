@@ -4,7 +4,8 @@ source /vagrant/scripts/ubuntu/common.sh
 
 init_kubernetes() {
   echo "Starting Kubernetes..."
-  sudo kubeadm init --pod-network-cidr=${POD_NETWORK_CIDR} --kubernetes-version=${K8S_VERSION%-*} --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS}
+
+  sudo kubeadm init --pod-network-cidr=${POD_NETWORK_CIDR} --kubernetes-version=${K8S_VERSION%-*} --apiserver-advertise-address=${NODE_SERVER_IP}
 }
 
 remove_control_plane_taint() {
