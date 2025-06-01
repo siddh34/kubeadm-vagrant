@@ -1,16 +1,18 @@
-# Vagrant Kubeadm Manual Setup
+# Vagrant Kubeadm Setup
 
-This project sets up two virtual machines using Vagrant + VirtualBox. 
+This project sets up virtual machines using Vagrant + VirtualBox. It can be setup in ubuntu os currently later support will be added for arch and other linux
 
-## Virtual Machines Configuration
+## Virtual Machines Configuration based k8s config
 
 1. **VM1**: 
    - CPUs: 2
    - RAM: 4 GB
+   - disk: 20 GB
 
 2. **VM2**: 
    - CPUs: 1
    - RAM: 2 GB
+   - disk: 12 GB
 
 ## Getting Started
 
@@ -35,12 +37,7 @@ This project sets up two virtual machines using Vagrant + VirtualBox.
 
 - To SSH into VM1:
   ```
-  vagrant ssh vm1
-  ```
-
-- To SSH into VM2:
-  ```
-  vagrant ssh vm2
+  vagrant ssh {machine_name}
   ```
 
 ### Stopping the Virtual Machines
@@ -55,4 +52,10 @@ vagrant halt
 To remove the virtual machines, run:
 ```
 vagrant destroy
+```
+
+## Starting using kubectl from local
+
+```bash
+export KUBECONFIG=$(pwd)/.kube/config
 ```

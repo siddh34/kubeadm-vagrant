@@ -1,4 +1,5 @@
 require 'yaml'
+require 'vagrant-disksize'
 
 nodes = YAML.load_file('configuration.yaml')['nodes']
 
