@@ -76,5 +76,8 @@ sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 ```
 
-kubeadm join 192.168.56.101:6443 --token q86guo.oaarg27s2aps1ekr \
-	--discovery-token-ca-cert-hash sha256:563f8a08d0023b48a99bfd2febf1f347e7b3a96fd6937f9eac31fd20cc2e750e
+## Step 5: Make sure to add node using kubeadm join command
+
+```bash
+kubeadm join <control-plane-ip>:<port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+```

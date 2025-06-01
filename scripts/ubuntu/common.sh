@@ -1,6 +1,5 @@
 # Variables
 K8S_VERSION="1.32.0-1.1"
-CALICO_VERSION="v3.29.1"
 POD_NETWORK_CIDR="192.168.0.0/16"
 NODE_SERVER_IP="192.168.56.101"
 DEBIAN_FRONTEND=noninteractive
@@ -68,6 +67,7 @@ disable_swap() {
   sudo swapoff -a
 }
 
+# While updating k8s version, please update the version here
 install_kubernetes_components() {
   echo "Installing Kubernetes components..."
 
@@ -85,7 +85,6 @@ install_kubernetes_components() {
   sudo systemctl enable --now kubelet
 }
 
-# TODO: FIX THIS
 setup_kubeconfig() {
   sudo rm -rf /vagrant/.kube
   sudo mkdir -p /vagrant/.kube
