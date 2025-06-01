@@ -2,15 +2,15 @@
 K8S_VERSION="1.32.0-1.1"
 CALICO_VERSION="v3.29.1"
 POD_NETWORK_CIDR="192.168.0.0/16"
-APISERVER_ADVERTISE_ADDRESS="192.168.56.101"
+NODE_SERVER_IP="192.168.56.101"
 DEBIAN_FRONTEND=noninteractive
 
 # Parse arguments
 parse_args() {
   for arg in "$@"; do
     case $arg in
-      --api-server-ip=*)
-        APISERVER_ADVERTISE_ADDRESS="${arg#*=}"
+      --node-server-ip=*)
+        NODE_SERVER_IP="${arg#*=}"
         shift
         ;;
       *)
@@ -33,6 +33,8 @@ EOF
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.conf.default.rp_filter=1
+net.ipv4.conf.all.rp_filter=1
 EOF
   sudo sysctl --system
 
@@ -54,6 +56,8 @@ net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.conf.default.rp_filter=1
+net.ipv4.conf.all.rp_filter=1
 EOF
 
  sudo sysctl --system
@@ -74,13 +78,18 @@ install_kubernetes_components() {
 
   sudo apt-get update
   sudo apt-get install -y kubelet=${K8S_VERSION} kubeadm=${K8S_VERSION} kubectl=${K8S_VERSION}
+
+  echo "KUBELET_EXTRA_ARGS=\"--node-ip=${NODE_SERVER_IP}\"" >> /etc/default/kubelet
+
   sudo apt-mark hold kubelet kubeadm kubectl
   sudo systemctl enable --now kubelet
 }
 
+# TODO: FIX THIS
 setup_kubeconfig() {
-  sudo mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  export KUBECONFIG=$HOME/.kube/config
+  sudo rm -rf /vagrant/.kube
+  sudo mkdir -p /vagrant/.kube
+  sudo cp -i /etc/kubernetes/admin.conf /vagrant/.kube/config
+  sudo chown $(id -u):$(id -g) /vagrant/.kube/config
+  export KUBECONFIG=/vagrant/.kube/config
 }

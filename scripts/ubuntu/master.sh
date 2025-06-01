@@ -4,7 +4,8 @@ source /vagrant/scripts/ubuntu/common.sh
 
 init_kubernetes() {
   echo "Starting Kubernetes..."
-  sudo kubeadm init --pod-network-cidr=${POD_NETWORK_CIDR} --kubernetes-version=${K8S_VERSION%-*} --apiserver-advertise-address=${APISERVER_ADVERTISE_ADDRESS}
+
+  sudo kubeadm init --pod-network-cidr=${POD_NETWORK_CIDR} --kubernetes-version=${K8S_VERSION%-*} --apiserver-advertise-address=${NODE_SERVER_IP}
 }
 
 remove_control_plane_taint() {
@@ -12,8 +13,8 @@ remove_control_plane_taint() {
 }
 
 install_cni() {
-  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/${CALICO_VERSION}/manifests/tigera-operator.yaml
-  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/${CALICO_VERSION}/manifests/custom-resources.yaml
+  echo "Applying calico CNI plugin..."
+  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 }
 
 print_join_command() {
