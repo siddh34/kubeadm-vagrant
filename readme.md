@@ -2,11 +2,11 @@
 
 This project sets up virtual machines using Vagrant + VirtualBox. It can be setup in ubuntu os currently later support will be added for arch and other linux
 
-Before starting, Install disk_size plugin for vagrant:
+## Add envs to master or workers
 
-```bash
-vagrant plugin install vagrant-disksize
-```
+* Check .env.master, add env there for master node
+
+* Check .env.worker, add env there for worker node
 
 ## Virtual Machines Configuration based k8s config
 
@@ -27,6 +27,12 @@ vagrant plugin install vagrant-disksize
 - Install [Vagrant](https://www.vagrantup.com/downloads)
 - Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
+Before starting, Install disk_size plugin for vagrant:
+
+```bash
+vagrant plugin install vagrant-disksize
+```
+
 ### Setup
 
 1. Clone this repository or download the project files.
@@ -34,10 +40,20 @@ vagrant plugin install vagrant-disksize
    ```
    cd vagrant-project
    ```
-3. Start the virtual machines:
+3. Default autoconfig command (configures according to machine)
+   ```
+   go run main.go configure
+   ```
+4. Start the virtual machines:
    ```
    vagrant up
    ```
+
+Note: For custom configuration see
+
+```
+go run main.go configure --help
+```
 
 ### Accessing the Virtual Machines
 
