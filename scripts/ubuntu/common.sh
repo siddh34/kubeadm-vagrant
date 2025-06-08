@@ -85,7 +85,6 @@ install_kubernetes_components() {
   sudo systemctl enable --now kubelet
 }
 
-# TODO: FIX THIS
 setup_kubeconfig() {
   sudo rm -rf /vagrant/.kube
   sudo mkdir -p /vagrant/.kube

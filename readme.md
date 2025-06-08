@@ -2,6 +2,12 @@
 
 This project sets up virtual machines using Vagrant + VirtualBox. It can be setup in ubuntu os currently later support will be added for arch and other linux
 
+Before starting, Install disk_size plugin for vagrant:
+
+```bash
+vagrant plugin install vagrant-disksize
+```
+
 ## Virtual Machines Configuration based k8s config
 
 1. **VM1**: 
