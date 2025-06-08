@@ -13,6 +13,9 @@ import (
 	"main/cmd/utils"
 )
 
+// TODO: Add support a complete manual installation
+
+// configureCmd represents the configure command
 var configureCmd = &cobra.Command{
 	Use: "configure",
 	Short: "Configure the Vagrant and Kubeadm setup",
@@ -31,7 +34,6 @@ var configureCmd = &cobra.Command{
 			panic("No image found for the specified OS and architecture")
 		}
 
-		// TODO: Add env support
 		utils.Boldf("Using OS: %s, Architecture: %s, Image: %s\n", osType, arch, image)
 
 		masterCPUs, _ := cmd.Flags().GetString("master-cpus")
@@ -43,7 +45,6 @@ var configureCmd = &cobra.Command{
 		masterDiskSize, _ := cmd.Flags().GetString("master-disk-size")
 		workerDiskSize, _ := cmd.Flags().GetString("worker-disk-size")
 
-        // Convert string values to integers
         masterCPUsInt, _ := strconv.Atoi(masterCPUs)
         masterMemoryInt, _ := strconv.Atoi(masterMemory)
         workerCountInt, _ := strconv.Atoi(workerCount)
@@ -55,7 +56,6 @@ var configureCmd = &cobra.Command{
         utils.Boldf("Workers: %d nodes, %d CPUs each, %d MB Memory each, %s Disk size each\n", workerCountInt, workerCPUsInt, workerMemoryInt, workerDiskSize)
 
 		utils.Greenf("Loading environment variables...\n")
-		// Load environment variables
 		masterEnvFile := ".env.master"
 		workerEnvFile := ".env.worker"
 		masterEnv, err := utils.LoadEnv(masterEnvFile)
