@@ -17,17 +17,17 @@ import (
 
 // configureCmd represents the configure command
 var configureCmd = &cobra.Command{
-	Use: "configure",
+	Use:   "configure",
 	Short: "Configure the Vagrant and Kubeadm setup",
-	Long: "This command will help you configure the Vagrant and Kubeadm setup by generating necessary configuration files.",
+	Long:  "This command will help you configure the Vagrant and Kubeadm setup by generating necessary configuration files.",
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.Greenf("Starting configuration...\n")
 
 		osType, _ := cmd.Flags().GetString("os")
 		arch := runtime.GOARCH
 		if arch == "aarch64" {
-            arch = "arm64"
-        }
+			arch = "arm64"
+		}
 		utils.Greenf("Detected OS: %s, Architecture: %s\n", osType, arch)
 		image := utils.GetImage(osType, arch)
 		if image == "" {
@@ -37,23 +37,24 @@ var configureCmd = &cobra.Command{
 		utils.Boldf("Using OS: %s, Architecture: %s, Image: %s\n", osType, arch, image)
 
 		masterCPUs, _ := cmd.Flags().GetString("master-cpus")
-        masterMemory, _ := cmd.Flags().GetString("master-memory")
-        masterIP, _ := cmd.Flags().GetString("master-ip")
-        workerCount, _ := cmd.Flags().GetString("worker-number")
-        workerCPUs, _ := cmd.Flags().GetString("worker-cpus")
-        workerMemory, _ := cmd.Flags().GetString("worker-memory")
+		masterMemory, _ := cmd.Flags().GetString("master-memory")
+		masterIP, _ := cmd.Flags().GetString("master-ip")
+		workerCount, _ := cmd.Flags().GetString("worker-number")
+		workerCPUs, _ := cmd.Flags().GetString("worker-cpus")
+		workerMemory, _ := cmd.Flags().GetString("worker-memory")
 		masterDiskSize, _ := cmd.Flags().GetString("master-disk-size")
 		workerDiskSize, _ := cmd.Flags().GetString("worker-disk-size")
+		isManual, _ := cmd.Flags().GetBool("manual-setup")
 
-        masterCPUsInt, _ := strconv.Atoi(masterCPUs)
-        masterMemoryInt, _ := strconv.Atoi(masterMemory)
-        workerCountInt, _ := strconv.Atoi(workerCount)
-        workerCPUsInt, _ := strconv.Atoi(workerCPUs)
-        workerMemoryInt, _ := strconv.Atoi(workerMemory)
+		masterCPUsInt, _ := strconv.Atoi(masterCPUs)
+		masterMemoryInt, _ := strconv.Atoi(masterMemory)
+		workerCountInt, _ := strconv.Atoi(workerCount)
+		workerCPUsInt, _ := strconv.Atoi(workerCPUs)
+		workerMemoryInt, _ := strconv.Atoi(workerMemory)
 
 		utils.Boldf("Using OS: %s, Architecture: %s, Image: %s\n", osType, arch, image)
-        utils.Boldf("Master: %d CPUs, %d MB Memory, IP: %s Disk: %s\n", masterCPUsInt, masterMemoryInt, masterIP, masterDiskSize)
-        utils.Boldf("Workers: %d nodes, %d CPUs each, %d MB Memory each, %s Disk size each\n", workerCountInt, workerCPUsInt, workerMemoryInt, workerDiskSize)
+		utils.Boldf("Master: %d CPUs, %d MB Memory, IP: %s Disk: %s\n", masterCPUsInt, masterMemoryInt, masterIP, masterDiskSize)
+		utils.Boldf("Workers: %d nodes, %d CPUs each, %d MB Memory each, %s Disk size each\n", workerCountInt, workerCPUsInt, workerMemoryInt, workerDiskSize)
 
 		utils.Greenf("Loading environment variables...\n")
 		masterEnvFile := ".env.master"
@@ -67,51 +68,53 @@ var configureCmd = &cobra.Command{
 			panic(fmt.Sprintf("Error loading environment variables from %s: %v", workerEnvFile, err))
 		}
 
+		masterScriptPath := utils.GetScripts(osType, masterIP, isManual, true)
 		config := models.Config{
 			Nodes: []models.Node{
 				{
-					Name:    "master",
+					Name:     "master",
 					Hostname: "master",
-					IP:      masterIP,
-					CPUs:    masterCPUsInt,
-					Memory:  masterMemoryInt,
-					Image:   image,
-					Script:  fmt.Sprintf("scripts/%s/master.sh --node-server-ip=%s", osType, masterIP),
+					IP:       masterIP,
+					CPUs:     masterCPUsInt,
+					Memory:   masterMemoryInt,
+					Image:    image,
+					Script:   masterScriptPath,
 					DiskSize: masterDiskSize,
-					Env:     masterEnv,
+					Env:      masterEnv,
 				},
 			},
 		}
 
-        for i := 1; i <= workerCountInt; i++ {
-            workerIP := fmt.Sprintf("192.168.56.%d", 101+i)
-            worker := models.Node{
-                Name:     fmt.Sprintf("worker%d", i),
-                Hostname: fmt.Sprintf("worker%d", i),
-                IP:       workerIP,
-                CPUs:     workerCPUsInt,
-                Memory:   workerMemoryInt,
-                Image:    image,
-                Script:   fmt.Sprintf("scripts/%s/nodes.sh --node-server-ip=%s", osType, workerIP),
-                DiskSize: workerDiskSize,
-				Env:     workerEnv,
-            }
-            config.Nodes = append(config.Nodes, worker)
-        }
+		for i := 1; i <= workerCountInt; i++ {
+			workerIP := fmt.Sprintf("192.168.56.%d", 101+i)
+			workerScriptPath := utils.GetScripts(osType, workerIP, isManual, false)
+			worker := models.Node{
+				Name:     fmt.Sprintf("worker%d", i),
+				Hostname: fmt.Sprintf("worker%d", i),
+				IP:       workerIP,
+				CPUs:     workerCPUsInt,
+				Memory:   workerMemoryInt,
+				Image:    image,
+				Script:   workerScriptPath,
+				DiskSize: workerDiskSize,
+				Env:      workerEnv,
+			}
+			config.Nodes = append(config.Nodes, worker)
+		}
 
 		yamlData, err := yaml.Marshal(config)
-        if err != nil {
-            panic(fmt.Sprintf("Error marshaling configuration to YAML: %v", err))
-        }
+		if err != nil {
+			panic(fmt.Sprintf("Error marshaling configuration to YAML: %v", err))
+		}
 
-        // Add header comment
-        yamlString := "# DO NOT EDIT THIS FILE, AUTOGENERATED VIA configure command\n\n" + string(yamlData)
+		// Add header comment
+		yamlString := "# DO NOT EDIT THIS FILE, AUTOGENERATED VIA configure command\n\n" + string(yamlData)
 
-        // Write the configuration to the file
-        err = os.WriteFile("configuration.yaml", []byte(yamlString), 0644)
-        if err != nil {
-            panic(fmt.Sprintf("Error writing configuration to file: %v", err))
-        }
+		// Write the configuration to the file
+		err = os.WriteFile("configuration.yaml", []byte(yamlString), 0644)
+		if err != nil {
+			panic(fmt.Sprintf("Error writing configuration to file: %v", err))
+		}
 
 		utils.Greenf("Configuration completed successfully!\n")
 	},
@@ -129,4 +132,5 @@ func init() {
 	configureCmd.PersistentFlags().StringP("master-ip", "a", "192.168.56.101", "Specify the IP address for the master node")
 	configureCmd.PersistentFlags().StringP("master-disk-size", "d", "20GB", "Specify the disk size for the master node")
 	configureCmd.PersistentFlags().StringP("worker-disk-size", "D", "12GB", "Specify the disk size for each worker node")
+	configureCmd.PersistentFlags().BoolP("manual-setup", "p", false, "Enable manual installation mode (default: false)")
 }

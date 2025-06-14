@@ -72,7 +72,7 @@ echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 sudo apt-get update
 sudo apt-get install -y kubelet=1.31.6-1.1 kubeadm=1.31.6-1.1 kubectl=1.31.6-1.1 cri-tools=1.31.1-1.1
 sudo apt-mark hold kubelet kubeadm kubectl
-
+echo "KUBELET_EXTRA_ARGS=\"--node-ip=192.168.56.102\"" >> /etc/default/kubelet
 sudo systemctl enable --now kubelet
 ```
 

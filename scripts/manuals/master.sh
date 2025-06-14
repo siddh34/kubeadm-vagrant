@@ -1,0 +1,1 @@
+echo "please visit https://github.com/siddh34/kubeadm-vagrant/blob/main/manuals/cluster_setup.md"
