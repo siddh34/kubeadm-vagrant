@@ -7,7 +7,7 @@ nodes:
   cpus: 4
   memory: 4096
   image: net9/ubuntu-24.04-arm64
-  script: scripts/ubuntu/master.sh
+  script: scripts/ubuntu/master.sh --node-server-ip=192.168.56.101
   disk_size: 20GB
   env:
   - name: IP_AUTODETECTION_METHOD
@@ -20,5 +20,5 @@ nodes:
   cpus: 2
   memory: 2048
   image: net9/ubuntu-24.04-arm64
-  script: scripts/ubuntu/nodes.sh
+  script: scripts/ubuntu/nodes.sh --node-server-ip=192.168.56.102
   disk_size: 12GB
