@@ -12,5 +12,10 @@ func GetScripts(os_type string, ip_address string, manual_mode bool, is_master b
 	} else if !is_master {
 		script += os_type + "/nodes.sh"
 	}
+
+	if ip_address != "" || manual_mode {
+		script += " --node-server-ip=" + ip_address
+	}
+
 	return script
 }
